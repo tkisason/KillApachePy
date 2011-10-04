@@ -6,7 +6,7 @@ NAME        = "KillApachePy (Range Header DoS CVE-2011-3192)"
 VERSION     = "0.1c"
 AUTHOR      = "Miroslav Stampar (http://unconciousmind.blogspot.com | @stamparm)"
 LICENSE     = "Public domain (FREE)"
-SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts. More complex/bigger the page the better. Also, GET method seems to be more promising than default HEAD."
+SHORT       = "You'll typically have to wait for 10-20 iterations before first connection timeouts. More complex/bigger the page the better. Also, GET method seems to be more promising than default HEAD"
 REFERENCE   = "http://seclists.org/fulldisclosure/2011/Aug/175"
 
 SLEEP_TIME      = 3     # time to wait for new thread slots (after max number reached)
